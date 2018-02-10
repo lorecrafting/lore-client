@@ -1,3 +1,4 @@
+
 <template>
   <div class="hello">
     <p v-html="msg"></p>
@@ -11,6 +12,7 @@
 </template>
 
 <script>
+import { parse } from "himalaya";
 export default {
   name: "HelloWorld",
   data() {
@@ -18,7 +20,7 @@ export default {
       socket: null,
       userInputTxt: null,
       msg: "",
-      loginScreen: "",
+      loginScreen: true,
       roomTitle: "",
       roomDesc: "",
       exits: ""
@@ -36,9 +38,26 @@ export default {
     });
 
     socket.addEventListener("message", e => {
-      const data = JSON.parse(e.data)[1];
+      const data = JSON.parse(e.data)[1][0];
       console.log("ws data from evennia", data);
-      this.msg = text[0];
+
+      const parsedData = data
+        .replace(/&nbsp;/g, "")
+        .replace(/<\/?[^>]+(>|$)+/g, "")
+        .split("Exits:")
+        .map(item => {
+          return item.split("You see:");
+        });
+
+      console.log("parsedData", parsedData);
+      let titleAndDesc = parsedData[0][0].split(/\(#[0-9]+\)/);
+      let things
+
+      let roomTitle = titleAndDesc[0];
+      let roomDesc = titleAndDesc[1];
+      this.roomTitle = roomTitle;
+      this.roomDesc = roomDesc;
+      this.msg = data;
     });
     this.$root.socket = socket;
   },
