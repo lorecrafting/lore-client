@@ -12,7 +12,6 @@
 </template>
 
 <script>
-import { parse } from "himalaya";
 export default {
   name: "HelloWorld",
   data() {
