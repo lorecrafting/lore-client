@@ -1,7 +1,19 @@
 
 <template>
-  <div class="hello">
+  
+  <div id="player_location_container">
+    <header id="room_title">
+      <h2>{{ roomTitle }}</h2>
+    </header>
+    <section id="room_desc"> {{ roomDesc }}</section>
+    <section id="room_contents"> {{ roomContents}}</section>
+    <section id="room_exits"> {{ roomExits }}</section>
+    <section id="room_events"></section>
+
+
+
     <p v-html="msg"></p>
+
    
  
     <form @submit.prevent="sendTextToEvennia">
@@ -22,7 +34,8 @@ export default {
       loginScreen: true,
       roomTitle: "",
       roomDesc: "",
-      exits: ""
+      roomContents: [],
+      roomExits: ""
     };
   },
   created() {
@@ -37,26 +50,26 @@ export default {
     });
 
     socket.addEventListener("message", e => {
-      const data = JSON.parse(e.data)[1][0];
-      console.log("ws data from evennia", data);
+      const data = JSON.parse(e.data);
+      this.msg = data[1][0];
 
-      const parsedData = data
-        .replace(/&nbsp;/g, "")
-        .replace(/<\/?[^>]+(>|$)+/g, "")
-        .split("Exits:")
-        .map(item => {
-          return item.split("You see:");
-        });
+      console.log("data from evennia", data);
 
-      console.log("parsedData", parsedData);
-      let titleAndDesc = parsedData[0][0].split(/\(#[0-9]+\)/);
-      let things
+      if (data[2].player_location_update) {
+        const {
+          room_title,
+          room_desc,
+          room_contents,
+          room_exits
+        } = data[2].player_location_update;
 
-      let roomTitle = titleAndDesc[0];
-      let roomDesc = titleAndDesc[1];
-      this.roomTitle = roomTitle;
-      this.roomDesc = roomDesc;
-      this.msg = data;
+        this.roomTitle = room_title;
+        this.roomDesc = room_desc;
+        this.roomContents = room_contents;
+        this.roomExits = room_exits;
+
+
+      }
     });
     this.$root.socket = socket;
   },
@@ -95,5 +108,13 @@ li {
 }
 a {
   color: #42b983;
+}
+#room_desc {
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 50px;
+  text-align: left;
+
+
 }
 </style>
