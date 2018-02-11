@@ -33,6 +33,8 @@
     <form @submit.prevent="sendTextToEvennia">
       <input type="text" v-model="userInputTxt">
     </form>
+
+    <input @click="clearEventLog"type="button" value="clear">
     
   </div>
 </template>
@@ -65,7 +67,7 @@ export default {
 
     socket.addEventListener("message", e => {
       const data = JSON.parse(e.data);
-      this.msg = data[1][0];
+    
 
       console.log("data from evennia", data);
 
@@ -83,6 +85,10 @@ export default {
         this.roomExits = room_exits;
 
 
+      } else {
+        this.msg += "<p>" + data[1][0] + "</p>";
+        const container = this.$el.querySelector("#room_events_container");
+        container.scrollTop = container.scrollHeight;
       }
     });
     this.$root.socket = socket;
@@ -101,6 +107,9 @@ export default {
         this.$root.socket.send(JSON.stringify(data));
       }
       this.userInputTxt = null;
+    },
+    clearEventLog: function() {
+      this.msg = "";
     }
   }
 };
@@ -123,11 +132,31 @@ li {
 a {
   color: #42b983;
 }
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+::-webkit-scrollbar {
+    width: 0px;  /* remove scrollbar space */
+    background: transparent;  /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+    background: #FF0000;
+}
+#room_title_header {
+  width: 700px;
+  height: 50px;
+}
 #room_desc_container {
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 20px;
   text-align: left;
+  width: 700px;
+  height: 100px;
+
 }
 #room_contents_container {
   padding-left: 50px;
@@ -142,11 +171,16 @@ a {
   padding-top: 20px;
   padding-left: 50px;
   padding-right: 50px;
+  padding-bottom: 50px;
   text-align: center;
 }
 #room_events_container {
   padding-left: 50px;
   padding-right: 50px;
   text-align: left;
+  height: 400px;
+  display: inline-block;
+  position: relative;
+  overflow-y: hidden;
 }
 </style>
