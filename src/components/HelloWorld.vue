@@ -2,17 +2,31 @@
 <template>
   
   <div id="player_location_container">
-    <header id="room_title">
+    <header id="room_title_header">
       <h2>{{ roomTitle }}</h2>
     </header>
-    <section id="room_desc"> {{ roomDesc }}</section>
-    <section id="room_contents"> {{ roomContents}}</section>
-    <section id="room_exits"> {{ roomExits }}</section>
-    <section id="room_events"></section>
+    <section id="room_desc_container"> {{ roomDesc }}</section>
+    <section id="room_contents_container">
+        <p id="room_content_item" v-for="item in roomContents" :key="item">
+          {{ item }}
+        </p>
+    </section>
+    <section id="room_exits_container">
+        <div v-if="roomExits.length > 0" id="room_exits_list">
+          Exits:
+         <span v-for="exit in roomExits" :key="exit">
+          {{ exit }}
+        </span>
+        </div>
+            </section>
+    <section id="room_events_container">
+      <p v-html="msg"></p>
+    </section>
 
 
 
-    <p v-html="msg"></p>
+
+    
 
    
  
@@ -109,12 +123,30 @@ li {
 a {
   color: #42b983;
 }
-#room_desc {
+#room_desc_container {
   padding-left: 50px;
   padding-right: 50px;
-  padding-bottom: 50px;
+  padding-bottom: 20px;
   text-align: left;
-
-
+}
+#room_contents_container {
+  padding-left: 50px;
+  padding-right: 50px;
+  text-align: left;
+}
+#room_content_item {
+  margin-bottom: 0px;
+  margin-top: 0px;
+}
+#room_exits_container {
+  padding-top: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
+  text-align: center;
+}
+#room_events_container {
+  padding-left: 50px;
+  padding-right: 50px;
+  text-align: left;
 }
 </style>
