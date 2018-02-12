@@ -193,6 +193,7 @@ html {
   height: 400px;
   padding-left: 50px;
   padding-right: 50px;
+  padding-top: 30px;
   text-align: left;
   overflow-y: hidden;
 }
