@@ -70,13 +70,15 @@ export default {
         const currentLocation = data[2].current_location
         console.log('currentLocation', currentLocation)
 
-        this.roomTitle = currentLocation.name;
-        this.roomDesc = currentLocation.desc;
-        this.roomContents = currentLocation.contents;
-        this.roomExits = currentLocation.exits;
+        this.changeLocation(currentLocation)
+        
 
 
       } else {
+        // HACKY: to squelch room update messages to event log
+        if (data[1][0][0] === '*') {
+          return
+        }
         this.msg += "<p>" + data[1][0] + "</p>";
         const container = this.$el.querySelector("#room_events_container");
         container.scrollTop = container.scrollHeight;
@@ -100,6 +102,13 @@ export default {
         this.$root.socket.send(JSON.stringify(data));
       }
       this.userInputTxt = null;
+    },
+    changeLocation: function(currentLocation) {
+      this.roomTitle = currentLocation.name;
+      this.roomDesc = currentLocation.desc;
+      this.roomContents = currentLocation.contents;
+      this.roomExits = currentLocation.exits;
+      this.clearEventLog()
     },
     clearEventLog: function() {
       this.msg = "";
@@ -136,7 +145,7 @@ html {
 }
 /* optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
-    background: #FF0000;
+    background: #FFFFFF;
 }
 #player_location_container {
   width: 50%;
@@ -159,15 +168,18 @@ html {
 
 }
 #room_contents_container {
+  width: 100%;
   padding-left: 50px;
   padding-right: 50px;
   text-align: left;
 }
 #room_content_item {
+  width: 100%;
   margin-bottom: 0px;
   margin-top: 0px;
 }
 #room_exits_container {
+  width: 100%;
   padding-top: 20px;
   padding-left: 50px;
   padding-right: 50px;
@@ -175,6 +187,7 @@ html {
   text-align: center;
 }
 #room_events_container {
+  width: 100%;
   padding-left: 50px;
   padding-right: 50px;
   text-align: left;
