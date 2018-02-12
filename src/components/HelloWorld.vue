@@ -1,41 +1,35 @@
 
 <template>
-  
-  <div id="player_location_container">
-    <header id="room_title_header">
-      <h2>{{ roomTitle }}</h2>
-    </header>
-    <section id="room_desc_container"> {{ roomDesc }}</section>
-    <section id="room_contents_container">
-        <p id="room_content_item" v-for="item in roomContents" :key="item">
-          {{ item }}
-        </p>
-    </section>
-    <section id="room_exits_container">
-        <div v-if="roomExits.length > 0" id="room_exits_list">
-          Exits:
-         <span v-for="exit in roomExits" :key="exit">
-          {{ exit }}
-        </span>
-        </div>
-            </section>
-    <section id="room_events_container">
-      <p v-html="msg"></p>
-    </section>
+  <div> 
+    <div id="player_location_container">
+      <header id="room_title_header">
+        <h2>{{ roomTitle }}</h2>
+      </header>
+      <section id="room_desc_container"> {{ roomDesc }}</section>
+      <section id="room_contents_container">
+          <p id="room_content_item" v-for="item in roomContents" :key="item">
+            {{ item }}
+          </p>
+      </section>
+      <section id="room_exits_container">
+          <div v-if="roomExits.length > 0" id="room_exits_list">
+            Exits:
+          <span v-for="exit in roomExits" :key="exit">
+            {{ exit }} ,
+          </span>
+          </div>
+              </section>
+      <section id="room_events_container">
+        <p v-html="msg"></p>
+      </section>
 
+      <form @submit.prevent="sendTextToEvennia">
+        <input type="text" v-model="userInputTxt">
+      </form>
 
-
-
-    
-
-   
- 
-    <form @submit.prevent="sendTextToEvennia">
-      <input type="text" v-model="userInputTxt">
-    </form>
-
-    <input @click="clearEventLog"type="button" value="clear">
-    
+      <input @click="clearEventLog"type="button" value="clear">
+      
+    </div>
   </div>
 </template>
 
@@ -102,6 +96,8 @@ export default {
         .replace(/[\n]+/, "\n")
         .split("\n");
       console.log("lines", lines);
+      
+
       const data = ["text", lines, {}];
       if (this.userInputTxt) {
         this.$root.socket.send(JSON.stringify(data));
@@ -145,9 +141,16 @@ html {
 ::-webkit-scrollbar-thumb {
     background: #FF0000;
 }
+#player_location_container {
+  width: 50%;
+  margin: 0 auto;
+
+}
 #room_title_header {
   width: 700px;
   height: 50px;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 #room_desc_container {
   padding-left: 50px;

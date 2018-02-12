@@ -1,0 +1,14 @@
+@dig/teleport A Cobblestone Courtyard
+@desc A worn stone courtyard sits right outside of the militia outpost.  A faint militia banner wavers in the distant.  You see small groups of militia leisurely swinging their swords. Rush-strewn training dummies line the courtyard.
+@dig/teleport A Militia Outpost = militia outpost;e;east,cobblestone courtyard;w;west
+@desc The stone building serves as a gathering point for the local militia in this area.  Serving the small villages throughout the province, this is where most of the recruiting takes place for the imperial army. A village square can be seen to the east and a cobblestone courtyard provides fresh open air to the outpost.
+@dig/teleport The Village Square = village square;east;e,military academy,west,w
+@desc Villagers congregate and sit around the stone well that supplies the lifeline of this village.  The local military academy sits to the west. A hovel lined path to the north and the largest hovel in the village to the south.  A road to the east disappears outside of the village.
+@dig/teleport A Path to the Village = road to the east;e;east,village square,w,west
+@desc Dirt is kicked up as you travel this bare path.  The village square lies to the west.  This road doesn’t seem to be traveled much.  Evidence of a very remote village. A path to the east leads to the outside of the village.
+@dig/teleport Outside a Village = outside of the village;e;east,path to the small village;w;west
+@desc The border between man and nature is evident here.  To the east are the wild plains and to the west is a path to a small village.  You begin to feel quite lonely, but the pastoral scene ahead comforts you.
+@dig/teleport Into the Wild Plains = wild plains;e;east,outskirts of a village;w;west
+@desc Beyond the outskirts of a village, with only a barely traveled path as your guide, you look around and see expansive rolling plains covered with dried out tall-grass. You wonder what adventures await you in the distance.
+
+
