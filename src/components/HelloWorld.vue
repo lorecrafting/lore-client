@@ -61,22 +61,19 @@ export default {
 
     socket.addEventListener("message", e => {
       const data = JSON.parse(e.data);
+
     
 
       console.log("data from evennia", data);
 
-      if (data[2].player_location_update) {
-        const {
-          room_title,
-          room_desc,
-          room_contents,
-          room_exits
-        } = data[2].player_location_update;
+      if (data[2].current_location) {
+        const currentLocation = data[2].current_location
+        console.log('currentLocation', currentLocation)
 
-        this.roomTitle = room_title;
-        this.roomDesc = room_desc;
-        this.roomContents = room_contents;
-        this.roomExits = room_exits;
+        this.roomTitle = currentLocation.name;
+        this.roomDesc = currentLocation.desc;
+        this.roomContents = currentLocation.contents;
+        this.roomExits = currentLocation.exits;
 
 
       } else {
