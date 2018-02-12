@@ -23,11 +23,14 @@
         <p v-html="msg"></p>
       </section>
 
-      <form @submit.prevent="sendTextToEvennia">
-        <input type="text" v-model="userInputTxt">
-      </form>
+      <section id="userInput">
+        <form @submit.prevent="sendTextToEvennia">
+          <input type="text" v-model="userInputTxt">
+        </form>
 
-      <input @click="clearEventLog"type="button" value="clear">
+        <input @click="clearEventLog"type="button" value="clear">
+      </section>
+      
       
     </div>
   </div>
@@ -168,9 +171,10 @@ html {
 
 }
 #room_contents_container {
-  width: 100%;
+  width: 700px;
   padding-left: 50px;
   padding-right: 50px;
+  padding-bottom: 20px;
   text-align: left;
 }
 #room_content_item {
@@ -179,21 +183,24 @@ html {
   margin-top: 0px;
 }
 #room_exits_container {
-  width: 100%;
-  padding-top: 20px;
+  width: 700px;
   padding-left: 50px;
   padding-right: 50px;
-  padding-bottom: 50px;
   text-align: center;
 }
 #room_events_container {
-  width: 100%;
+  width: 700px;
+  height: 400px;
   padding-left: 50px;
   padding-right: 50px;
   text-align: left;
-  height: 400px;
-  display: inline-block;
-  position: relative;
   overflow-y: hidden;
+}
+#userInput {
+  width: 700px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 20px;
+  text-align: center; 
 }
 </style>
