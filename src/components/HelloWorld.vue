@@ -17,7 +17,7 @@
       <section id="room_events_container">
       </section>
 
-      <section id="userInput">
+      <section id="user_input_container">
         <form @submit.prevent="sendTextToEvennia">
           <input type="text" v-model="userInputTxt">
           <input @click="clearEventLog"type="button" value="clear">
@@ -212,7 +212,7 @@ html {
   text-align: left;
   overflow-y: hidden;
 }
-#userInput {
+#user_input_container {
   width: 650px;
   padding-left: 50px;
   padding-right: 50px;
