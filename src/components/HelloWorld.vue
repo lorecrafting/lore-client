@@ -5,7 +5,7 @@
       <header id="room_title_header">
         <h2>{{ roomTitle }}</h2>
       </header>
-      <RoomDesc id="room_contents_container" v-bind:roomDesc="roomDesc"/>
+      <RoomDesc id="room_contents_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendTextToEvennia="sendTextToEvennia"/>
       <section id="room_exits_container">
           <div v-if="roomExits.length > 0" id="room_exits_list">
             Exits:
@@ -18,7 +18,7 @@
       </section>
 
       <section id="user_input_container">
-        <form @submit.prevent="sendTextToEvennia">
+        <form @submit.prevent="userInputSubmit">
           <input type="text" v-model="userInputTxt">
           <input @click="clearEventLog"type="button" value="clear">
         </form>
@@ -30,7 +30,7 @@
 </template>
 
 <script>
-import RoomDesc from './RoomDesc'
+import RoomDesc from "./RoomDesc";
 export default {
   name: "HelloWorld",
   data() {
@@ -100,7 +100,7 @@ export default {
     this.$root.socket = socket;
   },
   methods: {
-    sendTextToEvennia: function(e) {
+    userInputSubmit: function(e) {
       console.log("sendTextToEvennia: ", e);
       const lines = this.userInputTxt
         ? this.userInputTxt
@@ -110,12 +110,13 @@ export default {
             .replace(/[\n]+/, "\n")
             .split("\n");
       console.log("lines", lines);
-
-      const data = ["text", lines, {}];
-      if (this.userInputTxt) {
-        this.$root.socket.send(JSON.stringify(data));
-      }
+      this.sendTextToEvennia(lines)
       this.userInputTxt = null;
+    },
+    sendTextToEvennia: function(messageToEvennia) {
+      console.log('SEND TEXT TO EVENNIA EXEC', messageToEvennia)
+       const data = ["text", messageToEvennia, {}];
+       this.$root.socket.send(JSON.stringify(data));
     },
     traverseExit: function(exitString) {
       console.log("traverseExit executed");
@@ -133,7 +134,7 @@ export default {
   },
   components: {
     RoomDesc
-  }  
+  }
 };
 </script>
 

@@ -1,28 +1,35 @@
 
 <script>
 export default {
-  data: function() {
-    return {
-      zomg: "ZOMG ROOM DESC HERE"
-    }
-  },
   props: {
-    roomDesc: String
+    roomDesc: String,
+    roomExits: Array,
+    sendTextToEvennia: Function
   },
   render: function(h) {
-    console.log('this.roomDesc', this.roomDesc)
-    const roomDescRawString = this.roomDesc
+   const { roomDesc, roomExits } = this;
+   const parsedRoom = roomDesc.split('*');
 
-    const test = <div>{roomDescRawString}</div>
-    return (
-      test
-    )
+   const _createClickableExit = (exitName) => {
+      return <span id="clickableRoomExit" on-click={ () => this.sendTextToEvennia(exitName)}>{exitName}</span> 
+   }
+
+  roomExits.forEach( name => {
+    splitRoomByAsterix.forEach( (frag, idx, arr) => {
+      if (name === frag) {
+        arr[idx] = _createClickableExit(name)
+      }
+    } )
+  })
+    return <div>{splitRoomByAsterix}</div>
   }
-}
+};
 </script>
 
 <style scoped>
-
+#clickableRoomExit {
+  font-weight: bold;
+}
 </style>
 
 
