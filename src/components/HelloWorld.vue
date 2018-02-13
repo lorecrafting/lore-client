@@ -14,7 +14,7 @@
           </span>
           </div>
               </section>
-      <section id="room_events_container">
+      <section v-html="roomEventLog" id="room_events_container">
       </section>
 
       <section id="user_input_container">
@@ -37,7 +37,7 @@ export default {
     return {
       socket: null,
       userInputTxt: null,
-      msg: "",
+      roomEventLog: "",
       loginScreen: true,
       roomTitle: "",
       roomDesc: "",
@@ -92,7 +92,7 @@ export default {
         if (data[1][0][0] === "*") {
           return;
         }
-        this.msg += "<p>" + data[1][0] + "</p>";
+        this.roomEventLog += "<p>" + data[1][0] + "</p>";
         const container = this.$el.querySelector("#room_events_container");
         container.scrollTop = container.scrollHeight;
       }
@@ -128,7 +128,7 @@ export default {
       this.clearEventLog();
     },
     clearEventLog: function() {
-      this.msg = "";
+      this.roomEventLog = "";
     }
   },
   components: {
