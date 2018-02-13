@@ -3,7 +3,7 @@
 import Vue from "vue";
 import App from "./App";
 
-window.wsurl = "ws://lorecraft.io:4005";
+window.wsurl = "wss://lorecraft.io:4005";
 
 Vue.config.productionTip = false;
 
