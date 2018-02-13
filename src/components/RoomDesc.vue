@@ -2,8 +2,14 @@
 <script>
 export default {
   props: {
-    roomDesc: String,
-    roomExits: Array,
+    roomDesc: {
+      default: "",
+      type: String
+    },
+    roomExits: {
+      default: [],
+      type: Array
+    },
     sendTextToEvennia: Function
   },
   render: function(h) {
