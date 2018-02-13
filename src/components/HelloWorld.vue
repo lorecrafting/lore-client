@@ -5,7 +5,14 @@
       <header id="room_title_header">
         <h2>{{ roomTitle }}</h2>
       </header>
-      <RoomDesc id="room_contents_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendTextToEvennia="sendTextToEvennia"/>
+
+      <RoomDesc id="room_desc_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendTextToEvennia="sendTextToEvennia"/>
+
+      <section id="room_contents_container">
+          <p id="room_content_item" v-for="item in roomContents" :key="item">
+            {{ item }}
+          </p>
+      </section>
       <!-- <section id="room_exits_container">
           <div v-if="roomExits.length > 0" id="room_exits_list">
             Exits:
@@ -142,7 +149,7 @@ export default {
 <style scoped>
 h1,
 h2 {
-  font-weight: normal;
+  font-weight: bold;
 }
 ul {
   list-style-type: none;
