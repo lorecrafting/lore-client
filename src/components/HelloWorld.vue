@@ -5,12 +5,7 @@
       <header id="room_title_header">
         <h2>{{ roomTitle }}</h2>
       </header>
-      <section id="room_desc_container"> {{ roomDesc }}</section>
-      <section id="room_contents_container">
-          <p id="room_content_item" v-for="item in roomContents" :key="item">
-            {{ item }}
-          </p>
-      </section>
+      <RoomDesc id="room_contents_container" v-bind:roomDesc="roomDesc"/>
       <section id="room_exits_container">
           <div v-if="roomExits.length > 0" id="room_exits_list">
             Exits:
@@ -20,15 +15,13 @@
           </div>
               </section>
       <section id="room_events_container">
-        <p v-html="msg"></p>
       </section>
 
       <section id="userInput">
         <form @submit.prevent="sendTextToEvennia">
           <input type="text" v-model="userInputTxt">
+          <input @click="clearEventLog"type="button" value="clear">
         </form>
-
-        <input @click="clearEventLog"type="button" value="clear">
       </section>
       
       
@@ -37,6 +30,7 @@
 </template>
 
 <script>
+import RoomDesc from './RoomDesc'
 export default {
   name: "HelloWorld",
   data() {
@@ -50,6 +44,27 @@ export default {
       roomContents: [],
       roomExits: ""
     };
+  },
+  computed: {
+    parsedRoomDesc: function() {
+      let parsedRoomDescStr = this.roomDesc;
+
+      if (this.roomExits.length === 0) {
+        return this.roomDesc;
+      } else {
+        console.log("room has exits");
+        this.roomExits.forEach(function(exitString) {
+          parsedRoomDescStr = parsedRoomDescStr.replace(
+            exitString,
+            `<span class="exitText" @click="traverseExit" data-exitName="${exitString}">` +
+              exitString +
+              "</span>"
+          );
+        });
+        console.log("parsedRoomDescStr", parsedRoomDescStr);
+        return parsedRoomDescStr;
+      }
+    }
   },
   created() {
     const socket = new WebSocket(wsurl);
@@ -65,22 +80,17 @@ export default {
     socket.addEventListener("message", e => {
       const data = JSON.parse(e.data);
 
-    
-
       console.log("data from evennia", data);
 
       if (data[2].current_location) {
-        const currentLocation = data[2].current_location
-        console.log('currentLocation', currentLocation)
+        const currentLocation = data[2].current_location;
+        console.log("currentLocation", currentLocation);
 
-        this.changeLocation(currentLocation)
-        
-
-
+        this.changeLocation(currentLocation);
       } else {
         // HACKY: to squelch room update messages to event log
-        if (data[1][0][0] === '*') {
-          return
+        if (data[1][0][0] === "*") {
+          return;
         }
         this.msg += "<p>" + data[1][0] + "</p>";
         const container = this.$el.querySelector("#room_events_container");
@@ -93,12 +103,13 @@ export default {
     sendTextToEvennia: function(e) {
       console.log("sendTextToEvennia: ", e);
       const lines = this.userInputTxt
-        .trim()
-        .replace(/[\r]+/, "\n")
-        .replace(/[\n]+/, "\n")
-        .split("\n");
+        ? this.userInputTxt
+        : ""
+            .trim()
+            .replace(/[\r]+/, "\n")
+            .replace(/[\n]+/, "\n")
+            .split("\n");
       console.log("lines", lines);
-      
 
       const data = ["text", lines, {}];
       if (this.userInputTxt) {
@@ -106,17 +117,23 @@ export default {
       }
       this.userInputTxt = null;
     },
+    traverseExit: function(exitString) {
+      console.log("traverseExit executed");
+    },
     changeLocation: function(currentLocation) {
       this.roomTitle = currentLocation.name;
       this.roomDesc = currentLocation.desc;
       this.roomContents = currentLocation.contents;
       this.roomExits = currentLocation.exits;
-      this.clearEventLog()
+      this.clearEventLog();
     },
     clearEventLog: function() {
       this.msg = "";
     }
-  }
+  },
+  components: {
+    RoomDesc
+  }  
 };
 </script>
 
@@ -138,25 +155,24 @@ a {
   color: #42b983;
 }
 html {
-    overflow: scroll;
-    overflow-x: hidden;
-    overflow-y: hidden;
+  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: hidden;
 }
 ::-webkit-scrollbar {
-    width: 0px;  /* remove scrollbar space */
-    background: transparent;  /* optional: just make scrollbar invisible */
+  width: 0px; /* remove scrollbar space */
+  background: transparent; /* optional: just make scrollbar invisible */
 }
 /* optional: show position indicator in red */
 ::-webkit-scrollbar-thumb {
-    background: #FFFFFF;
+  background: #ffffff;
 }
 #player_location_container {
   width: 50%;
   margin: 0 auto;
-
 }
 #room_title_header {
-  width: 700px;
+  width: 650px;
   height: 50px;
   padding-left: 50px;
   padding-right: 50px;
@@ -166,12 +182,11 @@ html {
   padding-right: 50px;
   padding-bottom: 20px;
   text-align: left;
-  width: 700px;
+  width: 650px;
   height: 100px;
-
 }
 #room_contents_container {
-  width: 700px;
+  width: 650px;
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 20px;
@@ -183,13 +198,13 @@ html {
   margin-top: 0px;
 }
 #room_exits_container {
-  width: 700px;
+  width: 650px;
   padding-left: 50px;
   padding-right: 50px;
   text-align: center;
 }
 #room_events_container {
-  width: 700px;
+  width: 650px;
   height: 400px;
   padding-left: 50px;
   padding-right: 50px;
@@ -198,10 +213,13 @@ html {
   overflow-y: hidden;
 }
 #userInput {
-  width: 700px;
+  width: 650px;
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 20px;
-  text-align: center; 
+  text-align: center;
+}
+.exitText {
+  font-weight: bold;
 }
 </style>
