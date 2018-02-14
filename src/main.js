@@ -3,7 +3,7 @@
 import Vue from "vue";
 import App from "./App";
 
-window.wsurl = "ws://localhost:4005";
+window.wsurl = process.env.WSURL
 
 Vue.config.productionTip = false;
 

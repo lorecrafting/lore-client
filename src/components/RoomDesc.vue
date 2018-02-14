@@ -13,20 +13,23 @@ export default {
     sendCommandToEvennia: Function
   },
   render: function(h) {
-   const { roomDesc, roomExits } = this;
-   const parsedRoom = roomDesc.split('*');
+    const { roomDesc, roomExits } = this;
+    const parsedRoom = roomDesc.split('*');
 
-   const _createClickableExit = (exitName) => {
+    const _createClickableExit = (exitName) => {
       return <span id="clickableRoomExit" on-click={ () => this.sendCommandToEvennia(exitName)}>{exitName}</span> 
-   }
-  roomExits.forEach( name => {
-    parsedRoom.forEach( (frag, idx, arr) => {
-      if (name === frag) {
-        arr[idx] = _createClickableExit(name)
-      }
-    } )
-  })
+    }
+
+    roomExits.forEach( name => {
+      parsedRoom.forEach( (frag, idx, arr) => {
+        if (name === frag) {
+          arr[idx] = _createClickableExit(name)
+        }
+      } )
+    })
+
     return <div>{parsedRoom}</div>
+    
   }
 };
 </script>

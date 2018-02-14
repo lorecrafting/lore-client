@@ -5,7 +5,10 @@
         <h2>{{ roomTitle }}</h2>
       </header>
 
-      <RoomDesc id="room_desc_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendCommandToEvennia="sendCommandToEvennia"/>
+      <RoomDesc id="room_desc_container" 
+        v-bind:roomExits="roomExits" 
+        v-bind:roomDesc="roomDesc" 
+        v-bind:sendCommandToEvennia="sendCommandToEvennia"/>
 
       <section id="room_contents_container">
           <p id="room_content_item" v-for="item in roomContents" :key="item">
@@ -29,6 +32,7 @@
           <input @click="clearEventLog"type="button" value="clear">
         </form>
       </section>
+      
     </div>
 </template>
 
@@ -47,48 +51,41 @@ export default {
     };
   },
   created() {
-    const socket = new WebSocket(wsurl);
-
-    socket.addEventListener("open", () => {
-      console.log("WS Connection Opened!");
-    });
-
-    socket.addEventListener("close", () => {
-      console.log("WS Closed");
-    });
-
-    socket.addEventListener("message", e => {
-      const data = JSON.parse(e.data);
-
-      console.log("Incoming data from Evennia: ", data);
-
-
-      // If "current_location" field exists in data from Evennia then update room.
-      if (data[2].current_location) {
-        const currentLocation = data[2].current_location;
-        this.updatePlayerLocation(currentLocation);
-      } else {
-        
-        // Do nothing on logged_in response from Evennia
-        if(data[0] === "logged_in") {
-          return
-        }
-
-        // HACKY: to squelch room update messages to event log
-        if (data[1][0][0] === "*") {
-          return;
-        }
-        // Append all other messages from Evennia to event log
-        this.roomEventLog += "<p>" + data[1][0] + "</p>";
-        const container = this.$el.querySelector("#room_events_container");
-        container.scrollTop = container.scrollHeight;
-      }
-    });
-
-    // Attach socket instance to Vue's root scope so any component has access.
-    this.$root.socket = socket;
+    this.initWebsocketConx(window.wsurl);
   },
   methods: {
+    initWebsocketConx: function(wsurl) {
+      const socket = new WebSocket(wsurl);
+      socket.addEventListener("open", () => {
+        console.log("WS Connection Opened!");
+      });
+      socket.addEventListener("close", () => {
+        console.log("WS Closed");
+      });
+      socket.addEventListener("message", this.handleIncomingWebsocketData);
+
+      // Attach socket instance to Vue's root scope so any component has access.
+      this.$root.socket = socket;
+    },
+    handleIncomingWebsocketData: function(e) {
+      const data = JSON.parse(e.data);
+      console.log("Incoming data from Evennia: ", data);
+      // Do nothing on logged_in response from Evennia
+      if (data[0] === "logged_in") {
+        return;
+      }
+      // HACKY: to squelch room update messages to event log
+      if (data[1][0][0] === "*") {
+        return;
+      }
+      // If "current_location" field exists in data from Evennia then update room.
+      if (data[2].current_location) {
+        this.updatePlayerLocation(data[2].current_location);
+      } else {
+        // Append all over messages from Evennia to event log
+        this.appendEventLog(data[1][0]);
+      }
+    },
     userInputSubmit: function(e) {
       const lines = this.userInputTxt
         ? this.userInputTxt
@@ -97,21 +94,26 @@ export default {
             .replace(/[\r]+/, "\n")
             .replace(/[\n]+/, "\n")
             .split("\n");
-      this.sendCommandToEvennia(lines)
+      this.sendCommandToEvennia(lines);
       this.userInputTxt = null;
     },
     sendCommandToEvennia: function(messageToEvennia) {
-       const data = ["text", messageToEvennia, {}];
-       console.log('Outgoing data to Evennia: ',data)
-       this.$root.socket.send(JSON.stringify(data));
+      const data = ["text", messageToEvennia, {}];
+      console.log("Outgoing data to Evennia: ", data);
+      this.$root.socket.send(JSON.stringify(data));
     },
     updatePlayerLocation: function(currentLocation) {
-      console.log('CurrentLocation being updated to: ', currentLocation)
+      console.log("CurrentLocation being updated to: ", currentLocation);
       this.roomTitle = currentLocation.name;
       this.roomDesc = currentLocation.desc;
       this.roomContents = currentLocation.contents;
       this.roomExits = currentLocation.exits;
       this.clearEventLog();
+    },
+    appendEventLog: function(data) {
+      this.roomEventLog += "<p>" + data + "</p>";
+      const container = this.$el.querySelector("#room_events_container");
+      container.scrollTop = container.scrollHeight;
     },
     clearEventLog: function() {
       this.roomEventLog = "";
