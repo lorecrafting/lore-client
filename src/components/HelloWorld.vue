@@ -49,7 +49,7 @@ export default {
       roomTitle: "",
       roomDesc: "",
       roomContents: [],
-      roomExits: ""
+      roomExits: []
     };
   },
   computed: {

@@ -8,7 +8,7 @@ export default {
     },
     roomExits: {
       default: [],
-      type: Array
+      type: Array 
     },
     sendTextToEvennia: Function
   },
@@ -19,7 +19,6 @@ export default {
    const _createClickableExit = (exitName) => {
       return <span id="clickableRoomExit" on-click={ () => this.sendTextToEvennia(exitName)}>{exitName}</span> 
    }
-
   roomExits.forEach( name => {
     parsedRoom.forEach( (frag, idx, arr) => {
       if (name === frag) {
