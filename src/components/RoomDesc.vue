@@ -10,14 +10,14 @@ export default {
       default: [],
       type: Array 
     },
-    sendTextToEvennia: Function
+    sendCommandToEvennia: Function
   },
   render: function(h) {
    const { roomDesc, roomExits } = this;
    const parsedRoom = roomDesc.split('*');
 
    const _createClickableExit = (exitName) => {
-      return <span id="clickableRoomExit" on-click={ () => this.sendTextToEvennia(exitName)}>{exitName}</span> 
+      return <span id="clickableRoomExit" on-click={ () => this.sendCommandToEvennia(exitName)}>{exitName}</span> 
    }
   roomExits.forEach( name => {
     parsedRoom.forEach( (frag, idx, arr) => {

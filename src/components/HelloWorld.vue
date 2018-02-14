@@ -1,12 +1,11 @@
 
 <template>
-  <div> 
     <div id="player_location_container">
       <header id="room_title_header">
         <h2>{{ roomTitle }}</h2>
       </header>
 
-      <RoomDesc id="room_desc_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendTextToEvennia="sendTextToEvennia"/>
+      <RoomDesc id="room_desc_container" v-bind:roomExits="roomExits" v-bind:roomDesc="roomDesc" v-bind:sendCommandToEvennia="sendCommandToEvennia"/>
 
       <section id="room_contents_container">
           <p id="room_content_item" v-for="item in roomContents" :key="item">
@@ -30,10 +29,7 @@
           <input @click="clearEventLog"type="button" value="clear">
         </form>
       </section>
-      
-      
     </div>
-  </div>
 </template>
 
 <script>
@@ -42,36 +38,13 @@ export default {
   name: "HelloWorld",
   data() {
     return {
-      socket: null,
       userInputTxt: null,
       roomEventLog: "",
-      loginScreen: true,
       roomTitle: "",
       roomDesc: "",
       roomContents: [],
       roomExits: []
     };
-  },
-  computed: {
-    parsedRoomDesc: function() {
-      let parsedRoomDescStr = this.roomDesc;
-
-      if (this.roomExits.length === 0) {
-        return this.roomDesc;
-      } else {
-        console.log("room has exits");
-        this.roomExits.forEach(function(exitString) {
-          parsedRoomDescStr = parsedRoomDescStr.replace(
-            exitString,
-            `<span class="exitText" @click="traverseExit" data-exitName="${exitString}">` +
-              exitString +
-              "</span>"
-          );
-        });
-        console.log("parsedRoomDescStr", parsedRoomDescStr);
-        return parsedRoomDescStr;
-      }
-    }
   },
   created() {
     const socket = new WebSocket(wsurl);
@@ -87,28 +60,36 @@ export default {
     socket.addEventListener("message", e => {
       const data = JSON.parse(e.data);
 
-      console.log("data from evennia", data);
+      console.log("Incoming data from Evennia: ", data);
 
+
+      // If "current_location" field exists in data from Evennia then update room.
       if (data[2].current_location) {
         const currentLocation = data[2].current_location;
-        console.log("currentLocation", currentLocation);
-
-        this.changeLocation(currentLocation);
+        this.updatePlayerLocation(currentLocation);
       } else {
+        
+        // Do nothing on logged_in response from Evennia
+        if(data[0] === "logged_in") {
+          return
+        }
+
         // HACKY: to squelch room update messages to event log
         if (data[1][0][0] === "*") {
           return;
         }
+        // Append all other messages from Evennia to event log
         this.roomEventLog += "<p>" + data[1][0] + "</p>";
         const container = this.$el.querySelector("#room_events_container");
         container.scrollTop = container.scrollHeight;
       }
     });
+
+    // Attach socket instance to Vue's root scope so any component has access.
     this.$root.socket = socket;
   },
   methods: {
     userInputSubmit: function(e) {
-      console.log("sendTextToEvennia: ", e);
       const lines = this.userInputTxt
         ? this.userInputTxt
         : ""
@@ -116,19 +97,16 @@ export default {
             .replace(/[\r]+/, "\n")
             .replace(/[\n]+/, "\n")
             .split("\n");
-      console.log("lines", lines);
-      this.sendTextToEvennia(lines)
+      this.sendCommandToEvennia(lines)
       this.userInputTxt = null;
     },
-    sendTextToEvennia: function(messageToEvennia) {
-      console.log('SEND TEXT TO EVENNIA EXEC', messageToEvennia)
+    sendCommandToEvennia: function(messageToEvennia) {
        const data = ["text", messageToEvennia, {}];
+       console.log('Outgoing data to Evennia: ',data)
        this.$root.socket.send(JSON.stringify(data));
     },
-    traverseExit: function(exitString) {
-      console.log("traverseExit executed");
-    },
-    changeLocation: function(currentLocation) {
+    updatePlayerLocation: function(currentLocation) {
+      console.log('CurrentLocation being updated to: ', currentLocation)
       this.roomTitle = currentLocation.name;
       this.roomDesc = currentLocation.desc;
       this.roomContents = currentLocation.contents;

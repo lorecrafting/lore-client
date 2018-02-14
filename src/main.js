@@ -3,7 +3,7 @@
 import Vue from "vue";
 import App from "./App";
 
-window.wsurl = "ws://ec2-34-216-237-61.us-west-2.compute.amazonaws.com:4005";
+window.wsurl = "ws://localhost:4005";
 
 Vue.config.productionTip = false;
 
