@@ -4,6 +4,7 @@ import Vue from "vue";
 import App from "./App";
 
 window.wsurl = process.env.WSURL
+// window.wsurl = "wss://lorecraft.io/ws"
 
 Vue.config.productionTip = false;
 
