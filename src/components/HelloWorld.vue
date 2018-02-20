@@ -38,6 +38,7 @@
 
 <script>
 import RoomDesc from "./RoomDesc";
+
 export default {
   name: "HelloWorld",
   data() {
@@ -56,14 +57,9 @@ export default {
   methods: {
     initWebsocketConx: function(wsurl) {
       const socket = new WebSocket(wsurl);
-      socket.addEventListener("open", () => {
-        console.log("WS Connection Opened!");
-      });
-      socket.addEventListener("close", () => {
-        console.log("WS Closed");
-      });
-      socket.addEventListener("message", this.handleIncomingWebsocketData);
-
+      socket.onopen = () => console.log("WS Connection Opened!");
+      socket.onclose = () => console.log("WS Closed");
+      socket.onmessage = this.handleIncomingWebsocketData
       // Attach socket instance to Vue's root scope so any component has access.
       this.$root.socket = socket;
     },
