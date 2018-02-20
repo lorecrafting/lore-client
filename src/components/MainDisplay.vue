@@ -7,8 +7,7 @@
 
       <RoomDesc id="room_desc_container" 
         v-bind:roomExits="roomExits" 
-        v-bind:roomDesc="roomDesc" 
-        v-bind:sendCommandToEvennia="sendCommandToEvennia"/>
+        v-bind:roomDesc="roomDesc" />
 
       <section id="room_contents_container">
           <p id="room_content_item" v-for="item in roomContents" :key="item">
@@ -27,9 +26,9 @@
       </section>
 
       <section id="user_input_container">
-        <form @submit.prevent="userInputSubmit">
+        <form @submit.prevent="sendCommandToEvennia">
           <input type="text" v-model="userInputTxt">
-          <input @click="clearEventLog"type="button" value="clear">
+          <input @click="clearEventLog" type="button" value="clear">
         </form>
       </section>
       
@@ -51,52 +50,78 @@ export default {
       roomExits: []
     };
   },
-  created() {
-    this.initWebsocketConx(window.wsurl);
+  created() {},
+  mounted() {
+    function onText(args, kwargs) {
+      console.log("Evennit event: text", args, kwargs);
+    }
+    function onPrompt(args, kwargs) {
+      console.log("Evennit event: prompt", args, kwargs);
+    }
+    function onDefault(cmdname, args, kwargs) {
+      console.log("Evennit event: default", cmdname, args, kwargs);
+    }
+    function onConnectionClose(conn_name, evt) {
+      console.log("Evennia event: connection_close", conn_name, evt);
+    }
+    function onLoggedIn() {
+      console.log("Evennia event: logged_in");
+    }
+    function onGotOptions(args, kwargs) {
+      console.log("Evennia event: webclient_options", args, kwargs);
+    }
+    function onSilence(cmdname, kwargs, args) {
+      console.log(
+        "Evennia event: connection_open or connection_error",
+        cmdname,
+        kwargs,
+        args
+      );
+    }
+    Evennia.emitter.on("text", onText);
+    Evennia.emitter.on("prompt", onPrompt);
+    Evennia.emitter.on("default", onDefault);
+    Evennia.emitter.on("connection_close", onConnectionClose);
+    Evennia.emitter.on("logged_in", onLoggedIn);
+    Evennia.emitter.on("webclient_options", onGotOptions);
+    // silence currently unused events
+    Evennia.emitter.on("connection_open", onSilence);
+    Evennia.emitter.on("connection_error", onSilence);
   },
   methods: {
-    initWebsocketConx: function(wsurl) {
-      const socket = new WebSocket(wsurl);
-      socket.onopen = () => console.log("WS Connection Opened!");
-      socket.onclose = () => console.log("WS Closed");
-      socket.onmessage = this.handleIncomingWebsocketData
-      // Attach socket instance to Vue's root scope so any component has access.
-      this.$root.socket = socket;
-    },
-    handleIncomingWebsocketData: function(e) {
-      const data = JSON.parse(e.data);
-      console.log("Incoming data from Evennia: ", data);
-      // Do nothing on logged_in response from Evennia
-      if (data[0] === "logged_in") {
+    sendCommandToEvennia: function(e) {
+      if (!Evennia.isConnected()) {
+        var reconnect = confirm("Not currently connected. Reconnect?");
+        if (reconnect) {
+          // onText(["Attempting to reconnnect..."], { cls: "sys" });
+          Evennia.connect();
+        }
+        // Don't try to send anything until the connection is back.
         return;
       }
-      // HACKY: to squelch room update messages to event log
-      if (data[1][0][0] === "*") {
-        return;
+      var outtext = this.userInputTxt;
+      var lines = outtext
+        .trim()
+        .replace(/[\r]+/, "\n")
+        .replace(/[\n]+/, "\n")
+        .split("\n");
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i].trim();
+        if (line.length > 7 && line.substr(0, 7) == "##send ") {
+          // send a specific oob instruction ["cmdname",[args],{kwargs}]
+          line = line.slice(7);
+          var cmdarr = JSON.parse(line);
+          var cmdname = cmdarr[0];
+          var args = cmdarr[1];
+          var kwargs = cmdarr[2];
+          log(cmdname, args, kwargs);
+          Evennia.msg(cmdname, args, kwargs);
+        } else {
+          // input_history.add(line);
+          this.clearEventLog()
+          Evennia.msg("text", [line], {});
+        }
       }
-      // If "current_location" field exists in data from Evennia then update room.
-      if (data[2].current_location) {
-        this.updatePlayerLocation(data[2].current_location);
-      } else {
-        // Append all over messages from Evennia to event log
-        this.appendEventLog(data[1][0]);
-      }
-    },
-    userInputSubmit: function(e) {
-      const lines = this.userInputTxt
-        ? this.userInputTxt
-        : ""
-            .trim()
-            .replace(/[\r]+/, "\n")
-            .replace(/[\n]+/, "\n")
-            .split("\n");
-      this.sendCommandToEvennia(lines);
-      this.userInputTxt = null;
-    },
-    sendCommandToEvennia: function(messageToEvennia) {
-      const data = ["text", messageToEvennia, {}];
-      console.log("Outgoing data to Evennia: ", data);
-      this.$root.socket.send(JSON.stringify(data));
     },
     updatePlayerLocation: function(currentLocation) {
       console.log("CurrentLocation being updated to: ", currentLocation);
