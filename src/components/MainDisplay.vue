@@ -50,7 +50,16 @@ export default {
       roomExits: []
     };
   },
-  created() {},
+  created() {
+    keepEvenniaConxAlive: () => {
+      setInterval( () => {
+        // Connect to server
+        Evennia.msg("text", ["idle"], {});
+      },
+      60000*3
+    );
+    }
+  },
   mounted() {
     function onText(args, kwargs) {
       console.log("Evennit event: text", args, kwargs);
