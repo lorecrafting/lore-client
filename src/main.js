@@ -4,7 +4,9 @@ import Vue from "vue";
 import App from "./App";
 import Evennia from "./utils/evennia";
 
+// Evennia.js needs these two global variables to initialize
 window.wsurl = process.env.WSURL
+window.wsactive = true;
 // window.wsurl = "wss://lorecraft.io/ws"
 
 // Initialize Evennia connect library
