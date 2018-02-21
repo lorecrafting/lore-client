@@ -7,7 +7,8 @@
 
       <RoomDesc id="room_desc_container" 
         v-bind:roomExits="roomExits" 
-        v-bind:roomDesc="roomDesc" />
+        v-bind:roomDesc="roomDesc"
+        v-bind:sendCommandToEvennia="sendCommandToEvennia" />
 
       <section id="room_contents_container">
           <p id="room_content_item" v-for="item in roomContents" :key="item">
@@ -26,7 +27,7 @@
       </section>
 
       <section id="user_input_container">
-        <form @submit.prevent="sendCommandToEvennia">
+        <form @submit.prevent="userInputSubmit">
           <input type="text" v-model="userInputTxt">
           <input @click="clearEventLog" type="button" value="clear">
         </form>
@@ -105,7 +106,11 @@ export default {
     Evennia.emitter.on("update_player_location", this.onUpdatePlayerLocation)
   },
   methods: {
-    sendCommandToEvennia: function(e) {
+    userInputSubmit: function() {
+      const msg = this.userInputTxt;
+      this.sendCommandToEvennia(msg);
+    },
+    sendCommandToEvennia: function(msg) {
       if (!Evennia.isConnected()) {
         const reconnect = confirm("Not currently connected. Reconnect?");
         if (reconnect) {
@@ -115,7 +120,7 @@ export default {
         // Don't try to send anything until the connection is back.
         return;
       }
-      const outtext = this.userInputTxt;
+      const outtext = msg
       const lines = outtext
         .trim()
         .replace(/[\r]+/, "\n")
