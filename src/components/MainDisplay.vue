@@ -54,7 +54,6 @@ export default {
 
       // Send heartbeat to keep Evennia conx alive
       setInterval( () => {
-        // Connect to server
         console.log("Sending heartbeat to Evennia...")
         Evennia.msg("text", ["idle"], {});
       },
@@ -83,23 +82,23 @@ export default {
     function onGotOptions(args, kwargs) {
       console.log("Evennia event: webclient_options", args, kwargs);
     }
-    function onSilence(cmdname, kwargs, args) {
-      console.log(
-        "Evennia event: connection_open or connection_error",
-        cmdname,
-        kwargs,
-        args
-      );
-    }
+    // function onSilence(cmdname, kwargs, args) {
+    //   console.log(
+    //     "Evennia event: connection_open or connection_error",
+    //     cmdname,
+    //     kwargs,
+    //     args
+    //   );
+    // }
     
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
     Evennia.emitter.on("logged_in", onLoggedIn);
     Evennia.emitter.on("webclient_options", onGotOptions);
-    // silence currently unused events
-    Evennia.emitter.on("connection_open", onSilence);
-    Evennia.emitter.on("connection_error", onSilence);
+    // // silence currently unused events
+    // Evennia.emitter.on("connection_open", onSilence);
+    // Evennia.emitter.on("connection_error", onSilence);
 
     // handled events
     Evennia.emitter.on("text", this.onTextFromEvennia);
@@ -203,16 +202,14 @@ html {
 #player_location_container {
   width: 50%;
   margin: 0 auto;
+  padding-left: 50px;
+  padding-right: 50px;
 }
 #room_title_header {
   width: 650px;
   height: 50px;
-  padding-left: 50px;
-  padding-right: 50px;
 }
 #room_desc_container {
-  padding-left: 50px;
-  padding-right: 50px;
   padding-bottom: 20px;
   text-align: left;
   width: 650px;
@@ -220,27 +217,19 @@ html {
 }
 #room_contents_container {
   width: 650px;
-  padding-left: 50px;
-  padding-right: 50px;
   padding-bottom: 20px;
   text-align: left;
 }
 #room_content_item {
   width: 100%;
-  margin-bottom: 0px;
-  margin-top: 0px;
 }
 #room_exits_container {
   width: 650px;
-  padding-left: 50px;
-  padding-right: 50px;
   text-align: center;
 }
 #room_events_container {
   width: 650px;
   height: 400px;
-  padding-left: 50px;
-  padding-right: 50px;
   padding-top: 30px;
   padding-bottom: 30px;
   text-align: left;
@@ -248,8 +237,6 @@ html {
 }
 #user_input_container {
   width: 650px;
-  padding-left: 50px;
-  padding-right: 50px;
   padding-bottom: 20px;
   text-align: center;
 }
