@@ -57,7 +57,7 @@ export default {
         // Connect to server
         Evennia.msg("text", ["idle"], {});
       },
-      60000*2
+      60000*1
     );
     
   },
