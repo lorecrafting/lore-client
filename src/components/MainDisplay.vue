@@ -55,6 +55,7 @@ export default {
       // Send heartbeat to keep Evennia conx alive
       setInterval( () => {
         // Connect to server
+        console.log("Sending heartbeat to Evennia...")
         Evennia.msg("text", ["idle"], {});
       },
       60000*1
@@ -131,10 +132,12 @@ export default {
           const args = cmdarr[1];
           const kwargs = cmdarr[2];
           log(cmdname, args, kwargs);
+          console.log('Sending OOB command to Evennia: ', cmdname, args, kwargs)
           Evennia.msg(cmdname, args, kwargs);
         } else {
           // input_history.add(line);
           this.userInputTxt = "";
+          console.log('Sending text to Evennia: ', line)
           Evennia.msg("text", [line], {});
         }
       }
