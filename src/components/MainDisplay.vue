@@ -78,7 +78,7 @@ export default {
         args
       );
     }
-    Evennia.emitter.on("text", onText);
+    Evennia.emitter.on("text", this.onTextFromEvennia);
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
@@ -87,51 +87,55 @@ export default {
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_error", onSilence);
+    Evennia.emitter.on("update_player_location", this.onUpdatePlayerLocation)
   },
   methods: {
     sendCommandToEvennia: function(e) {
       if (!Evennia.isConnected()) {
-        var reconnect = confirm("Not currently connected. Reconnect?");
+        const reconnect = confirm("Not currently connected. Reconnect?");
         if (reconnect) {
-          // onText(["Attempting to reconnnect..."], { cls: "sys" });
+          this.onTextFromEvennia(["Attempting to reconnnect..."], { cls: "sys" });
           Evennia.connect();
         }
         // Don't try to send anything until the connection is back.
         return;
       }
-      var outtext = this.userInputTxt;
-      var lines = outtext
+      const outtext = this.userInputTxt;
+      const lines = outtext
         .trim()
         .replace(/[\r]+/, "\n")
         .replace(/[\n]+/, "\n")
         .split("\n");
-      for (var i = 0; i < lines.length; i++) {
-        var line = lines[i].trim();
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i].trim();
         if (line.length > 7 && line.substr(0, 7) == "##send ") {
           // send a specific oob instruction ["cmdname",[args],{kwargs}]
           line = line.slice(7);
-          var cmdarr = JSON.parse(line);
-          var cmdname = cmdarr[0];
-          var args = cmdarr[1];
-          var kwargs = cmdarr[2];
+          const cmdarr = JSON.parse(line);
+          const cmdname = cmdarr[0];
+          const args = cmdarr[1];
+          const kwargs = cmdarr[2];
           log(cmdname, args, kwargs);
           Evennia.msg(cmdname, args, kwargs);
         } else {
           // input_history.add(line);
-          this.clearEventLog()
+          this.userInputTxt = "";
           Evennia.msg("text", [line], {});
         }
       }
     },
-    updatePlayerLocation: function(currentLocation) {
-      console.log("CurrentLocation being updated to: ", currentLocation);
+    onUpdatePlayerLocation: function(args, kwargs) {
+      console.log("Evennia emits update_player_location:", args, kwargs );
+      const currentLocation = kwargs;
       this.roomTitle = currentLocation.name;
       this.roomDesc = currentLocation.desc;
       this.roomContents = currentLocation.contents;
       this.roomExits = currentLocation.exits;
       this.clearEventLog();
     },
-    appendEventLog: function(data) {
+    onTextFromEvennia: function(args) {
+      console.log("Evennia emits text: ", args)
+      const data = args[0]
       this.roomEventLog += "<p>" + data + "</p>";
       const container = this.$el.querySelector("#room_events_container");
       container.scrollTop = container.scrollHeight;
