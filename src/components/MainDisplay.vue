@@ -227,6 +227,8 @@ html {
 }
 #room_content_item {
   width: 100%;
+  margin-bottom: 0px;
+  margin-top: 0px;
 }
 #room_exits_container {
   width: 650px;
