@@ -51,16 +51,19 @@ export default {
     };
   },
   created() {
-    keepEvenniaConxAlive: () => {
+
+      // Send heartbeat to keep Evennia conx alive
       setInterval( () => {
         // Connect to server
         Evennia.msg("text", ["idle"], {});
       },
-      60000*3
+      60000*2
     );
-    }
+    
   },
   mounted() {
+
+    // TODO: Where to put and what to do with all these Evennia handlers?
     function onText(args, kwargs) {
       console.log("Evennit event: text", args, kwargs);
     }
@@ -87,7 +90,7 @@ export default {
         args
       );
     }
-    Evennia.emitter.on("text", this.onTextFromEvennia);
+    
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
     Evennia.emitter.on("connection_close", onConnectionClose);
@@ -96,6 +99,9 @@ export default {
     // silence currently unused events
     Evennia.emitter.on("connection_open", onSilence);
     Evennia.emitter.on("connection_error", onSilence);
+
+    // handled events
+    Evennia.emitter.on("text", this.onTextFromEvennia);
     Evennia.emitter.on("update_player_location", this.onUpdatePlayerLocation)
   },
   methods: {
@@ -146,6 +152,8 @@ export default {
       console.log("Evennia emits text: ", args)
       const data = args[0]
       this.roomEventLog += "<p>" + data + "</p>";
+
+      // auto scroll to bottom of event log when appending message
       const container = this.$el.querySelector("#room_events_container");
       container.scrollTop = container.scrollHeight;
     },
