@@ -157,7 +157,14 @@ export default {
     },
     onTextFromEvennia: function(args) {
       console.log("Evennia emits text: ", args)
+
       const data = args[0]
+
+      // HACKY: Squelch room update messages in the event log
+      if (data[0] === '*') {
+        return
+      }
+
       this.roomEventLog += "<p>" + data + "</p>";
 
       // auto scroll to bottom of event log when appending message
