@@ -153,7 +153,11 @@ export default {
       this.roomDesc = currentLocation.desc;
       this.roomContents = currentLocation.contents;
       this.roomExits = currentLocation.exits;
-      this.clearEventLog();
+
+      if (currentLocation.clearLog) {
+        this.clearEventLog();
+      }
+      
     },
     onTextFromEvennia: function(args) {
       console.log("Evennia emits text: ", args)
