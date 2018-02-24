@@ -51,6 +51,17 @@ export default {
       roomExits: []
     };
   },
+  watch: {
+    roomEventLog: function() {
+      console.log('watcher executing');
+      // auto scroll to bottom of event log when appending message
+      const container = this.$el.querySelector("#room_events_container");
+      setTimeout( () => {
+        container.scrollTop = container.scrollHeight;
+      }, 0)
+      
+    }
+  },
   created() {
 
       // Send heartbeat to keep Evennia conx alive
@@ -170,10 +181,6 @@ export default {
       }
 
       this.roomEventLog += "<p>" + data + "</p>";
-
-      // auto scroll to bottom of event log when appending message
-      const container = this.$el.querySelector("#room_events_container");
-      container.scrollTop = container.scrollHeight;
     },
     clearEventLog: function() {
       this.roomEventLog = "";
