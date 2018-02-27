@@ -1,6 +1,7 @@
 <template>
 <div>
   <h2>ZOMG LOGIN SCREEN HERE</h2>
+  <p>Just enter a name, any name, no need for password</p>
   
   <form @submit.prevent="loginWithUsername">
     <input type="text" v-model="username">
