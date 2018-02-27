@@ -115,6 +115,10 @@ export default {
     // handled events
     Evennia.emitter.on("text", this.onTextFromEvennia);
     Evennia.emitter.on("update_player_location", this.onUpdatePlayerLocation)
+
+    // Execute a look command after mount to get refresh room data from Evennia
+    // May have to refactor to use Vuex later.
+    this.sendCommandToEvennia("l")
   },
   methods: {
     userInputSubmit: function() {
