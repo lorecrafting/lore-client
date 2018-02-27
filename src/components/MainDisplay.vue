@@ -29,7 +29,8 @@
       <section id="user_input_container">
         <form @submit.prevent="userInputSubmit">
           <input type="text" v-model="userInputTxt">
-          <input @click="clearEventLog" type="button" value="clear">
+          <input type="submit" value="Send">
+          <input @click="clearEventLog" type="button" value="Clear Log">
         </form>
       </section>
       
