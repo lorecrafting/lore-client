@@ -87,6 +87,7 @@ export default {
       console.log("Evennit event: default", cmdname, args, kwargs);
     }
     function onConnectionClose(conn_name, evt) {
+      this.$router.push("/login")
       console.log("Evennia event: connection_close", conn_name, evt);
     }
     function onLoggedIn() {
@@ -128,11 +129,7 @@ export default {
     },
     sendCommandToEvennia: function(msg) {
       if (!Evennia.isConnected()) {
-        const reconnect = confirm("Not currently connected. Reconnect?");
-        if (reconnect) {
-          this.onTextFromEvennia(["Attempting to reconnnect..."], { cls: "sys" });
-          Evennia.connect();
-        }
+        this.$router.push("/login")
         // Don't try to send anything until the connection is back.
         return;
       }
