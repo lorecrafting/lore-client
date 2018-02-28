@@ -24,7 +24,7 @@ export default {
         // default password of 1234 and log in after a settimeout
         // no guards or checks or error handling
         console.log('zomg logging in with', this.username);
-
+        Evennia.init()
         const createUserMsg = "create " + this.username + " 1234";
         Evennia.msg("text", [createUserMsg], {});
 

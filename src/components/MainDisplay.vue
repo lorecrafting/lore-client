@@ -6,9 +6,9 @@
       </header>
 
       <RoomDesc id="room_desc_container" 
-        v-bind:roomExits="roomExits" 
-        v-bind:roomDesc="roomDesc"
-        v-bind:sendCommandToEvennia="sendCommandToEvennia" />
+        :roomExits="roomExits" 
+        :roomDesc="roomDesc"
+        :sendCommandToEvennia="sendCommandToEvennia" />
 
       <section id="room_contents_container">
           <p id="room_content_item" v-for="item in roomContents" :key="item">
@@ -77,18 +77,11 @@ export default {
   mounted() {
 
     // TODO: Where to put and what to do with all these Evennia handlers?
-    function onText(args, kwargs) {
-      console.log("Evennit event: text", args, kwargs);
-    }
     function onPrompt(args, kwargs) {
       console.log("Evennit event: prompt", args, kwargs);
     }
     function onDefault(cmdname, args, kwargs) {
       console.log("Evennit event: default", cmdname, args, kwargs);
-    }
-    function onConnectionClose(conn_name, evt) {
-      this.$router.push("/login")
-      console.log("Evennia event: connection_close", conn_name, evt);
     }
     function onLoggedIn() {
       console.log("Evennia event: logged_in");
@@ -107,7 +100,7 @@ export default {
     
     Evennia.emitter.on("prompt", onPrompt);
     Evennia.emitter.on("default", onDefault);
-    Evennia.emitter.on("connection_close", onConnectionClose);
+    Evennia.emitter.on("connection_close", this.onConnectionClose);
     Evennia.emitter.on("logged_in", onLoggedIn);
     Evennia.emitter.on("webclient_options", onGotOptions);
     // // silence currently unused events
@@ -123,6 +116,10 @@ export default {
     this.sendCommandToEvennia("l")
   },
   methods: {
+    onConnectionClose: function(conn_name, evt) {
+      this.$router.push("/login")
+      console.log("Evennia event: connection_close", conn_name, evt);
+    },
     userInputSubmit: function() {
       const msg = this.userInputTxt;
       this.sendCommandToEvennia(msg);
@@ -173,6 +170,7 @@ export default {
       
     },
     onTextFromEvennia: function(args) {
+      console.log('this context', this)
       console.log("Evennia emits text: ", args)
 
       const data = args[0]
