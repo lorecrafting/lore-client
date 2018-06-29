@@ -76,7 +76,7 @@ export default {
   },
   mounted() {
 
-    // TODO: Where to put and what to do with all these Evennia handlers?
+    // TODO: Refactor message handlers to vuex via vuex plugins
     function onPrompt(args, kwargs) {
       console.log("Evennit event: prompt", args, kwargs);
     }
